@@ -12,7 +12,7 @@ class DepartamentoController {
 
     def index() {
 
-       [departamentos: Departamento.findAll()]
+        [departamentos: Departamento.findAll()]
     }
 
     def show(Long id) {
