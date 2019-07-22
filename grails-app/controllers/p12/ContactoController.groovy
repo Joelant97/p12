@@ -11,7 +11,9 @@ class ContactoController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     def index() {
-        [usuarios: Contacto.findAll()]
+
+        [usuarios: Contacto.findAll(), categorias: Categoria.findAll()]
+
     }
 
     def show() {
@@ -160,8 +162,22 @@ class ContactoController {
 
     }
 
-    def edit(Long id) {
-        respond contactoService.get(id)
+    def editar(Long id) {
+        def contacto = contactoService.get(id)
+
+        render contacto as JSON
+    }
+
+    def update(Integer id, String nombre) {   //Update Others (ERROR) todo
+
+
+        def contacto = Contacto.findById(id)
+
+        contacto.setNombre(nombre)
+        contacto.save(flush: true, failOnError: true)
+
+        redirect(uri: '/contacto/index')
+
     }
 
 
