@@ -27,9 +27,9 @@
                                     <th scope="col"> <g:message code="movil"/> </th>
                                     <th scope="col"> <g:message code="puesto"/> </th>
                                     <th scope="col"> <g:message code="correo"/> </th>
-                                    <th scope="col"> <g:message code="categorias"/> </th>
                                     <th scope="col"> <g:message code="departamentos"/> </th>
-                                    <th scope="col" style="text-align: center;"> <g:message code="acciones"/> </th>
+                                    <th scope="col"> <g:message code="categorias"/> </th>
+
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -42,20 +42,25 @@
                                         <td>${contacto.puesto}</td>
                                         <td>${contacto.email}</td>
                                         <td>
-
-                                            <g:each in="${contacto.categorias}" var="categoria">
-                                                <span class="badge badge-pill badge-info">${categoria.nombre}</span>
-                                            </g:each>
-
+                                            <ul>
+                                                <li>
+                                                    <g:each in="${contacto.departamentos}" var="departamento">
+                                                         ${departamento.nombre}
+                                                    </g:each>
+                                                </li>
+                                            </ul>
                                         </td>
-
                                         <td>
-
-                                            <g:each in="${contacto.departamentos}" var="departamento">
-                                                <span class="badge badge-pill badge-brand">${departamento.nombre}</span>
-                                            </g:each>
-
+                                            <ul>
+                                                <li>
+                                                    <g:each in="${contacto.categorias}" var="categoria">
+                                                        ${categoria.nombre}
+                                                    </g:each>
+                                                </li>
+                                            </ul>
                                         </td>
+
+
 
                                         <td align="center">
                                             <button class="btn btn-rounded btn-danger" onclick="eliminar(${contacto.id})"><i
@@ -90,6 +95,7 @@
             <g:form action="update" controller="contacto"  method="PUT">
                 <div class="modal-body">
                     <div class="form-group">
+                        <input hidden name="usuario" value="">
                         <label for="nombre" class="col-form-label"> <g:message code="nombre"/> </label>
                         <input id="nombre" type="text" class="form-control" name="nombre" required>
                         <label for="apellido" class="col-form-label"> <g:message code="apellido"/> </label>
@@ -102,8 +108,14 @@
                         <input id="puesto" type="text" class="form-control" name="puesto" required>
                         <label for="email" class="col-form-label"> <g:message code="email"/> </label>
                         <input id="email" type="text" class="form-control" name="email" required>
+                        <label for="departamentos" class="col-form-label"> <g:message code="departamentos"/> </label>
+                        <select id="departamentos" name="departamento">
+                            <g:each in="${departamentos}" var="departamento">
+                                <option value="${departamento.id}">${departamento.nombre}</option>
+                            </g:each>
+                        </select>
                         <label for="categorias" class="col-form-label"> <g:message code="categorias"/> </label>
-                        <select id="categorias">
+                        <select id="categorias" name="categoria">
                             <g:each in="${categorias}" var="categoria">
                                 <option value="${categoria.id}">${categoria.nombre}</option>
                             </g:each>
@@ -156,6 +168,11 @@
                 document.getElementById('movil').value = resp.movil;
                 document.getElementById('puesto').value = resp.puesto;
                 document.getElementById('email').value = resp.email;
+                // document.getElementById('departamentos').value = resp.departamentos.nombre;
+                // document.getElementById('categorias').value = resp.categorias.nombre;
+
+
+
             //     let categoriaSelect = document.getElementById('categorias');
             //     var value = 0;
             //     resp.categorias.forEach(option =>

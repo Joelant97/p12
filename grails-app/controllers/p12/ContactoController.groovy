@@ -12,7 +12,7 @@ class ContactoController {
 
     def index() {
 
-        [usuarios: Contacto.findAll(), categorias: Categoria.findAll()]
+        [usuarios: Contacto.findAll(), categorias: Categoria.findAll(), departamentos: Departamento.findAll()]
 
     }
 
@@ -168,12 +168,19 @@ class ContactoController {
         render contacto as JSON
     }
 
-    def update(Integer id, String nombre) {   //Update Others (ERROR) todo
-
+    def update(Integer id, String nombre, String apellido, String telefono, String movil, String puesto, String email, String categoria, String departamento)
+    {
 
         def contacto = Contacto.findById(id)
 
         contacto.setNombre(nombre)
+        contacto.setApellido(apellido)
+        contacto.setTelefono(telefono)
+        contacto.setMovil(movil)
+        contacto.setPuesto(puesto)
+        contacto.setEmail(email)
+        contacto.setCategorias(new Set<Categoria>())   //Pasar lista String todo
+        contacto.setDepartamentos(departamento)
         contacto.save(flush: true, failOnError: true)
 
         redirect(uri: '/contacto/index')
