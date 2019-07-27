@@ -207,7 +207,6 @@
             url: "${g.createLink(controller:'contacto',action:'save')}",
             success: function (res) {
 
-                // alert('se fue');
                 if (res.valido !== 1){
                     alert('error');
                     console.log(res.errores.map(a => a.arguments[0] + ": " + a.arguments[2]));

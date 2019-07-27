@@ -23,14 +23,12 @@ class BootStrap {
             categoria3.save(flush: true, failOnError: true)
         }
 
-        if (Contacto.count() < 1){
+        /*if (Contacto.count() < 1){
 
             def contacto = new Contacto(nombre: "Joel", apellido: "Rodr", puesto: "dev", telefono: "5555555", direccion: "santiago", categorias: [Categoria.first()], email: "joelant97@gmail.com", movil: "8295555555", usuario: Usuario.first())
 
             contacto.save(flush:true, failOnError: true)
-        }
-
-
+        }*/
 
     }
 

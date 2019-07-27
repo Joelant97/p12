@@ -88,6 +88,7 @@
                                data-target="#submenu-2" aria-controls="submenu-2"><i
                                     class="fa fa-fw fa-user"></i> <g:message code="contactos"/> </a>
 
+
                             <div id="submenu-2" class="collapse submenu" style="">
                                 <ul class="nav flex-column">
                                     <li class="nav-item">

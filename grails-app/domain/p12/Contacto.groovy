@@ -21,7 +21,8 @@ class Contacto {
         email(email: true, unique: true, blank: false)
         movil blank: false, unique: true
         telefono blank: true
-        categorias blank: true
+        categorias blank: false
+        departamentos blank: false
     }
 
 

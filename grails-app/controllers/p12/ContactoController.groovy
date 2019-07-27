@@ -61,7 +61,6 @@ class ContactoController {
 
         def existe = 1, errores = ""
 
-
         try {
 
             def contacto = new Contacto(params)
@@ -79,8 +78,6 @@ class ContactoController {
 //                }
                 println "departamentos: " + params.departamentos as String
             }
-
-
             contacto.save(flush: true, failOnError: true)
 
         } catch (ValidationException e) {
@@ -91,6 +88,7 @@ class ContactoController {
 
         def res = [valido: existe, errores: errores]
         render res as JSON
+        redirect(uri: '/contacto/index')
     }
 
     def existe() {
@@ -105,25 +103,22 @@ class ContactoController {
         def movil = ""
         def entro = false
 
-        if (arr[0].startsWith("email")){
+        if (arr[0].startsWith("email")) {
             email = arr[0].trim()
             entro = true
-        }
-        else if (arr.length > 1){
+        } else if (arr.length > 1) {
             email = arr[1].trim()
             entro = true
         }
 
-        if (arr[0].startsWith("movil")){
+        if (arr[0].startsWith("movil")) {
             movil = arr[0].trim()
-        }
-        else if (arr.length > 1){
+        } else if (arr.length > 1) {
             movil = arr[1].trim()
         }
 
 
-        def contacto = null
-
+        def contacto = nul
         if (email != null && !email.equalsIgnoreCase("")) {
 
 //            println "email " + email.split(":")[1].trim()
@@ -136,10 +131,10 @@ class ContactoController {
 
 //        println "nombre: " + contacto.nombre
 
-        if (contacto != null){
+        if (contacto != null) {
 
 
-            Integer[] arreglo  = params.list('departamentos')
+            Integer[] arreglo = params.list('departamentos')
             println "ids: " + params.departamentos as String
             for (Integer id in arreglo) {
                 def departamento = Departamento.findById(id)
@@ -152,8 +147,7 @@ class ContactoController {
             }
 
 //            contacto.setDepartamentos(d)
-        }
-        else {
+        } else {
             println "contacto nulo"
         }
 
@@ -168,19 +162,23 @@ class ContactoController {
         render contacto as JSON
     }
 
-    def update(Integer id, String nombre, String apellido, String telefono, String movil, String puesto, String email, String categoria, String departamento)
-    {
+    def update(Integer id, String nombre, String apellido, String telefono, String movil, String puesto, String email, String categoria, String departamento) {
 
         def contacto = Contacto.findById(id)
+        def category =  Categoria.findById((categoria as Long))
+        Set categorias = [category]
 
+        def departament =  Departamento.findById((departamento as Long))
+        Set departamentos = [departament]
+
+        contacto.setCategorias(categorias)
+        contacto.setDepartamentos(departamentos)
         contacto.setNombre(nombre)
         contacto.setApellido(apellido)
         contacto.setTelefono(telefono)
         contacto.setMovil(movil)
         contacto.setPuesto(puesto)
         contacto.setEmail(email)
-        contacto.setCategorias(new Set<Categoria>())   //Pasar lista String todo
-        contacto.setDepartamentos(departamento)
         contacto.save(flush: true, failOnError: true)
 
         redirect(uri: '/contacto/index')

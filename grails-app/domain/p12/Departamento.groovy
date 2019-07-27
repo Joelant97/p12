@@ -11,7 +11,6 @@ class Departamento {
 
     static constraints = {
 
-
     }
 
     static mapping = {
