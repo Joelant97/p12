@@ -179,7 +179,7 @@ class ContactoController {
         contacto.setMovil(movil)
         contacto.setPuesto(puesto)
         contacto.setEmail(email)
-        contacto.setCategorias(new Set<Categoria>())   //Pasar lista String todo
+        contacto.setCategorias(categorias: categoria)   //Pasar lista String todo
         contacto.setDepartamentos(departamento)
         contacto.save(flush: true, failOnError: true)
 
