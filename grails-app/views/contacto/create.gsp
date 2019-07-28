@@ -23,7 +23,7 @@
                 <div class="card">
                     <h5 class="card-header"><g:message code="informacion"/></h5>
 
-                    <form id="form"  method="post">
+                    <form id="form" method="post">
                         <div class="card-body">
 
                             <div class="form-group">
@@ -87,33 +87,6 @@
 
                         </div>
 
-                    %{--<div class="card-body border-top">--}%
-                    %{--<h3>Información de usuario</h3>--}%
-
-
-                    %{--<label for="usuario" class="col-form-label">Usuario</label>--}%
-
-                    %{--<div class="form-group">--}%
-                    %{--<div class="input-group mb-3"><span class="input-group-prepend"><span--}%
-                    %{--class="input-group-text">@</span></span>--}%
-                    %{--<input type="text" id="usuario" placeholder="Nombre de usuario" name="username"--}%
-                    %{--class="form-control" required>--}%
-                    %{--</div>--}%
-                    %{--</div>--}%
-
-                    %{--<label for="password">Contraseña</label>--}%
-
-                    %{--<div class="form-group">--}%
-                    %{--<div class="input-group mb-3"><span class="input-group-prepend"><span--}%
-                    %{--class="input-group-text"><i class="fa fa-key"></i></span></span>--}%
-                    %{--<input type="password" id="password" placeholder="Contraseña" name="password"--}%
-                    %{--class="form-control" required>--}%
-                    %{--</div>--}%
-                    %{--</div>--}%
-
-
-                    %{--</div>--}%
-
                         <div style="float: right;margin-bottom: 5px;margin-right: 15px">
                             <button type="reset" class="btn btn-brand"><g:message code="cancelar"/></button>
                             <button type="submit" class="btn btn-success">OK</button>
@@ -130,7 +103,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"> <g:message code="error"/> </h5>
+                <h5 class="modal-title"><g:message code="error"/></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -139,21 +112,16 @@
             <g:form controller="contacto" action="existe">
                 <div class="modal-body">
                     <label id="errores"></label>
+
                     <div class="form-group">
-                        <div class="form-group">
-                            <label for="departamentosR"><g:message code="departamento"/></label>
-                            <select name="departamentos" multiple="multiple" id="departamentosR" style="width: 100%">
-
-                            </select>
-
-                        </div>
                         <input hidden type="text" id="error" name="error">
                     </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal"> <g:message code="cerrar"/> </button>
-                    <button type="submit" class="btn btn-primary"> <g:message code="guardar"/> </button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><g:message
+                            code="cerrar"/></button>
+                    <button type="submit" class="btn btn-primary" onsubmit="mostrarErrores()"><g:message code="ok"/></button>
                 </div>
             </g:form>
         </div>
@@ -163,7 +131,6 @@
 
 <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/3/jquery.inputmask.bundle.js"></script>
 <script>
-
     $(document).ready(function () {
 
         $(".telefono").inputmask({"mask": "(999) 999-9999"});
@@ -195,41 +162,73 @@
             e.preventDefault();
             crear();
         })
-
-
     });
 
     function crear() {
-
         $.ajax({
             type: 'POST',
             data: $('#form').serialize(),
             url: "${g.createLink(controller:'contacto',action:'save')}",
             success: function (res) {
+                if (res.valido !== 1) {
+                    alert("Errores al insertar: "+ res.errores.map(a => a.arguments[0] + ": " + a.arguments[2]));
 
-                if (res.valido !== 1){
-                    alert('error');
-                    console.log(res.errores.map(a => a.arguments[0] + ": " + a.arguments[2]));
-                    mostrarErrores(res.errores.map(a => a.arguments[0] +": " + a.arguments[2]));
-
+                    var uniqueErrors = res.errores.filter(it => (it.code === "unique"));
+                    if(uniqueErrors !== null) {
+                        var dialog = confirm("Existe un contacto con los campos: " +
+                            uniqueErrors.map(a => a.arguments[0] + ": " + a.arguments[2]) +
+                            "\nDesea agregar el departamento al contacto existente?");
+                        if(dialog == true)
+                            sendData(uniqueErrors);
+                    }
                 }
                 else {
-
                     alert('guardado');
                 }
             }
-
-
         })
     }
 
+    function sendData(data) {
+        var XHR = new XMLHttpRequest();
+        var FD  = new FormData();
+        var select = document.getElementById("departamentos");
+        // Push our data into our FormData object
+        for(i in data) {
+            FD.append(data[i].arguments[0], data[i].arguments[2]);
+        }
+        var selectedValues  = Array(...select.options).reduce((acc, option) => {
+            if (option.selected === true) {
+                acc.push(option.value);
+            }
+            return acc;
+        }, []);
+        FD.append("departamentos", selectedValues);
+
+        // Define what happens on successful data submission
+        XHR.addEventListener('load', function(event) {
+            alert('Yeah! Data sent and response loaded.');
+        });
+
+        // Define what happens in case of error
+        XHR.addEventListener('error', function(event) {
+            alert('Oops! Something went wrong.');
+        });
+
+        // Set up our request
+        XHR.open('POST', '/contacto/existe');
+
+        // Send our FormData object; HTTP headers are set automatically
+        XHR.send(FD);
+    }
     function mostrarErrores(errores) {
+        errors = errores.map(a => a.arguments[0] + ": " + a.arguments[2]);
+        document.getElementById("error").value = errors;
+        document.getElementById("errores").textContent = "Existe un contacto con los campos: " + errors +
+            "\nDesea agregar el departamento al contacto existente?" ;
 
-        document.getElementById("errores").textContent = "Existe un contacto con los campos: " + errores;
-        document.getElementById("error").value = errores;
 
-
-        $('#departamentosR').select2({
+       /* $('#departamentosR').select2({
             width: 'resolve',
             placeholder: '<g:message code="departamentos" /> ',
             allowClear: true,
@@ -249,15 +248,12 @@
                     return {results: data};
                 },
             },
-        });
-        console.log( 'data: ' +$('#departamentos').val());
-        $('#departamentosR').val([$('#departamentos').val()]);
+        }); */
+
+        //console.log('data: ' + $('#departamentos').val());
+        //$('#departamentosR').val([$('#departamentos').val()]);
         $("#modal").modal("toggle");
-
-
     }
-
-
 
 </script>
 

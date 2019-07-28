@@ -58,24 +58,15 @@ class ContactoController {
     }
 
     def save() {
-
-        def existe = 1, errores = ""
+        def existe = 1, errores
 
         try {
-
             def contacto = new Contacto(params)
             if (params.categoria != null && (params.categoria as String).isNumber()) {
                 def categoria = Categoria.findById(params.categoria as Integer)
-
                 contacto.addToCategorias(categoria)
             }
-
             if (params.departamentos != null) {
-//                for (Integer id in params.departamentos){
-//                    def departamento = Departamento.findById(id)
-//
-////                    contacto.addToDepartamentos(departamento)
-//                }
                 println "departamentos: " + params.departamentos as String
             }
             contacto.save(flush: true, failOnError: true)
@@ -83,77 +74,39 @@ class ContactoController {
         } catch (ValidationException e) {
             existe = -1
             errores = e.getErrors().getAllErrors()
-
         }
 
         def res = [valido: existe, errores: errores]
-        render res as JSON
-        redirect(uri: '/contacto/index')
+            render res as JSON
     }
 
     def existe() {
 
-//        println params.error
+        def email = params.email
+        def movil = params.movil
 
-        def s = params.error as String
-
-        def arr = s.split(",")
-
-        def email = ""
-        def movil = ""
-        def entro = false
-
-        if (arr[0].startsWith("email")) {
-            email = arr[0].trim()
-            entro = true
-        } else if (arr.length > 1) {
-            email = arr[1].trim()
-            entro = true
+        Contacto contacto
+        if (email != null && !email.equalsIgnoreCase("")){
+            contacto = Contacto.findByEmail(email)
         }
-
-        if (arr[0].startsWith("movil")) {
-            movil = arr[0].trim()
-        } else if (arr.length > 1) {
-            movil = arr[1].trim()
+        else if (movil != null && !movil.equalsIgnoreCase("")) {
+            contacto = Contacto.findByMovil(movil)
         }
-
-
-        def contacto = nul
-        if (email != null && !email.equalsIgnoreCase("")) {
-
-//            println "email " + email.split(":")[1].trim()
-            contacto = Contacto.findByEmail(email.split(":")[1].trim())
-        } else if (movil != null && !movil.equalsIgnoreCase("")) {
-
-//            println "movil " + movil.split(":")[1].trim()
-            contacto = Contacto.findByMovil(movil.split(":")[1].trim())
-        }
-
-//        println "nombre: " + contacto.nombre
 
         if (contacto != null) {
-
-
-            Integer[] arreglo = params.list('departamentos')
-            println "ids: " + params.departamentos as String
-            for (Integer id in arreglo) {
-                def departamento = Departamento.findById(id)
-
-//                println "departamento nombre: " + departamento.nombre
-//                d.add(departamento)
-//
-                contacto.addToDepartamentos(departamento)
-
+            params.departamentos.split(",").each {it ->
+                def departamento = Departamento.findById(it)
+                if(departamento)
+                    contacto.getDepartamentos().add(departamento)
             }
 
-//            contacto.setDepartamentos(d)
+
         } else {
             println "contacto nulo"
         }
 
         contacto.save(flush: true, failOnError: true)
         redirect(uri: '/contacto/index')
-
     }
 
     def editar(Long id) {
@@ -184,7 +137,6 @@ class ContactoController {
         redirect(uri: '/contacto/index')
 
     }
-
 
     def delete(Long id) {
         def contacto = Contacto.findById(id)

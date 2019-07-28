@@ -24,14 +24,11 @@ class DepartamentoController {
     }
 
     def todos(){
-
         def departamentos = Departamento.findAll()
-
         render departamentos as JSON
     }
 
     def save() {
-
         def usuario = (Usuario) getAuthenticatedUser()
         try {
 
@@ -42,18 +39,12 @@ class DepartamentoController {
         } catch (ValidationException e) {
             println e
         }
-
         redirect(uri: '/')
-
-
     }
 
     def editar(Long id) {
-
         def departamento = departamentoService.get(id)
-
         render departamento as JSON
-
     }
 
     def update(Integer id, String nombre) {
