@@ -184,6 +184,7 @@
                 }
                 else {
                     alert('guardado');
+                    window.location.replace("/contacto/index/")
                 }
             }
         })
@@ -207,7 +208,7 @@
 
         // Define what happens on successful data submission
         XHR.addEventListener('load', function(event) {
-            alert('Yeah! Data sent and response loaded.');
+            alert('Contacto Actualizado.');
         });
 
         // Define what happens in case of error
